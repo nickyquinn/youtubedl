@@ -42,6 +42,7 @@
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.btnChange = new System.Windows.Forms.Button();
             this.txtTerminal = new System.Windows.Forms.TextBox();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,16 +94,17 @@
             // doofersToolStripMenuItem
             // 
             this.doofersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
             this.quitYourJibberJabberToolStripMenuItem});
             this.doofersToolStripMenuItem.Name = "doofersToolStripMenuItem";
-            this.doofersToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
-            this.doofersToolStripMenuItem.Text = "&Doofers";
+            this.doofersToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.doofersToolStripMenuItem.Text = "&File";
             // 
             // quitYourJibberJabberToolStripMenuItem
             // 
             this.quitYourJibberJabberToolStripMenuItem.Name = "quitYourJibberJabberToolStripMenuItem";
-            this.quitYourJibberJabberToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.quitYourJibberJabberToolStripMenuItem.Text = "&Quit your jibber jabber";
+            this.quitYourJibberJabberToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.quitYourJibberJabberToolStripMenuItem.Text = "&Quit";
             this.quitYourJibberJabberToolStripMenuItem.Click += new System.EventHandler(this.quitYourJibberJabberToolStripMenuItem_Click);
             // 
             // txtSaveFolder
@@ -151,6 +153,13 @@
             this.txtTerminal.Size = new System.Drawing.Size(495, 161);
             this.txtTerminal.TabIndex = 9;
             // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -192,6 +201,7 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button btnChange;
         private System.Windows.Forms.TextBox txtTerminal;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }
 

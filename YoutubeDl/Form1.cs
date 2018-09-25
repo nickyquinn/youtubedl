@@ -33,6 +33,8 @@ namespace YoutubeDl
 
         private async void button1_Click(object sender, EventArgs e)
         {
+            txtTerminal.AppendText("Starting a video download run...");
+
             mainProgressBar.Visible = true;
             txtVideoUrl.Enabled = false;
             button1.Enabled = false;
@@ -42,24 +44,30 @@ namespace YoutubeDl
             var youtubeDl = new YoutubeDL();
 
             // Optional, required if binary is not in $PATH
-            youtubeDl.YoutubeDlPath = "lib/youtube-dl.exe";
+            youtubeDl.YoutubeDlPath = "lib\\youtube-dl.exe";
             youtubeDl.VideoUrl = txtVideoUrl.Text;
 
-            youtubeDl.Options.PostProcessingOptions.FfmpegLocation = "lib/ffmpeg.exe";
+            youtubeDl.Options.PostProcessingOptions.FfmpegLocation = "lib\\ffmpeg.exe";
             youtubeDl.Options.PostProcessingOptions.PreferFfmpeg = true;
 
-            var tmpFn = CleanFileName(DateTime.Now.ToString("ddMMyyyy hhmmss"));
+            var tmpDateTime = DateTime.Now.ToString("ddMMyyyy hhmmss");
+            var tmpFn = CleanFileName(tmpDateTime);
 
             if (chkAudioOnly.Checked)
             {
-                youtubeDl.Options.FilesystemOptions.Output = $"{txtSaveFolder.Text}/{tmpFn}.%(ext)s";
+                tmpFn = $"{txtSaveFolder.Text}\\{tmpFn}.partial.%(ext)s";
+
+                youtubeDl.Options.FilesystemOptions.Output = tmpFn;
                 youtubeDl.Options.PostProcessingOptions.AudioFormat = NYoutubeDL.Helpers.Enums.AudioFormat.mp3;
                 youtubeDl.Options.PostProcessingOptions.KeepVideo = false;
                 youtubeDl.Options.PostProcessingOptions.ExtractAudio = true;
+                youtubeDl.Options.PostProcessingOptions.KeepVideo = true;
             }
             else
             {
-                youtubeDl.Options.FilesystemOptions.Output = $"{txtSaveFolder.Text}/{tmpFn}.mp4";
+                tmpFn = $"{txtSaveFolder.Text}\\{tmpFn}.partial.mp4";
+
+                youtubeDl.Options.FilesystemOptions.Output = tmpFn;
                 youtubeDl.Options.VideoFormatOptions.Format = NYoutubeDL.Helpers.Enums.VideoFormat.mp4;
                 youtubeDl.Options.PostProcessingOptions.KeepVideo = true;
             }
@@ -91,7 +99,25 @@ namespace YoutubeDl
             mainProgressBar.Visible = false;
             btnChange.Enabled = true;
             menuStrip1.Enabled = true;
+
+            if(!chkAudioOnly.Checked)
+            {
+                if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
+                {
+                    var newFilename = tmpFn.Replace(".partial", "").Replace(tmpDateTime, CleanFileName(youtubeDl.Info.Title));
+                    File.Move(tmpFn, newFilename);
+                    txtTerminal.AppendText(Environment.NewLine + $"Saved as {newFilename}");
+                }
+                else
+                {
+                    var newFilename = tmpFn.Replace(".partial", "");
+                    File.Move(tmpFn, newFilename);
+                    txtTerminal.AppendText(Environment.NewLine + $"Saved as {newFilename}");
+                }
+            }
+            
         }
+
 
         private void quitYourJibberJabberToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -104,6 +130,12 @@ namespace YoutubeDl
             {
                 txtSaveFolder.Text = folderBrowserDialog1.SelectedPath;
             }
+        }
+
+        private void aboutToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            var about = new AboutBox();
+            about.Show();
         }
     }
 }

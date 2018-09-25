@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("YoutubeDl")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Downloads YouTube videos in max quality MP4 or MP3")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("YoutubeDl")]
