@@ -6,7 +6,9 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -125,6 +127,47 @@ namespace YoutubeDl
             }
             else
             {
+                //Download YouTube image url
+                if(txtVideoUrl.Text.Contains("youtube"))
+                {
+                    var youtubeMatch =
+                        new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]+)")
+                        .Match(txtVideoUrl.Text);
+                    var ytId = youtubeMatch.Success ? youtubeMatch.Groups[1].Value : string.Empty;
+
+                    if(!string.IsNullOrWhiteSpace(ytId))
+                    {
+                        var imageBytes = await GetImageAsByteArray($"/vi/{ytId}/0.jpg", "https://img.youtube.com");
+
+                        ////Add an image to the audio file.
+                        TagLib.Id3v2.Tag.DefaultVersion = 3;
+                        TagLib.Id3v2.Tag.ForceDefaultVersion = true;
+                        var fileToEdit = TagLib.File.Create(tmpFn);
+                        fileToEdit.Tag.Title = "";
+                        fileToEdit.Tag.Performers = new string[] { "" };
+                        fileToEdit.Tag.AlbumArtists = new string[] { "" };
+                        fileToEdit.Tag.Album = "";
+                        fileToEdit.Tag.Year = (uint)DateTime.Now.Year;
+                        fileToEdit.Tag.Genres = new string[] { "" };
+                        fileToEdit.Tag.Comment = "";
+
+                        var pic = new TagLib.Picture
+                        {
+                            Type = TagLib.PictureType.FrontCover,
+                            Description = "Cover",
+                            MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                            Data = imageBytes
+                        };
+
+                        fileToEdit.Tag.Pictures = new TagLib.IPicture[1] { pic };
+                        var dt = fileToEdit.Tag.Pictures[0].Data.Data;
+
+                        fileToEdit.Save();
+                    }
+                    
+                }
+
+                //Rename the audio file.
                 if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
                 {
                     var newFilename = tmpFn.Replace(".partial", "").Replace(tmpDateTime, CleanFileName(youtubeDl.Info.Title));
@@ -161,6 +204,16 @@ namespace YoutubeDl
         {
             var about = new AboutBox();
             about.Show();
+        }
+
+        private async Task<byte[]> GetImageAsByteArray(string urlImage, string urlBase)
+        {
+
+            var client = new HttpClient();
+            client.BaseAddress = new Uri(urlBase);
+            var response = await client.GetAsync(urlImage);
+
+            return await response.Content.ReadAsByteArrayAsync();
         }
     }
 }
