@@ -24,6 +24,13 @@ namespace YoutubeDl
     : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 
             txtSaveFolder.Text = homePath;
+
+            //Reload the last used folder if settings permit
+            var lastDirectory = Properties.Settings.Default["LastDirectory"];
+            if(lastDirectory != null)
+            {
+                txtSaveFolder.Text = (string)lastDirectory;
+            }
         }
 
         private static string CleanFileName(string fileName)
@@ -129,6 +136,8 @@ namespace YoutubeDl
             if(folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 txtSaveFolder.Text = folderBrowserDialog1.SelectedPath;
+                Properties.Settings.Default["LastDirectory"] = txtSaveFolder.Text;
+                Properties.Settings.Default.Save();
             }
         }
 
