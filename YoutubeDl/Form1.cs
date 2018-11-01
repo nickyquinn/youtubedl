@@ -62,13 +62,12 @@ namespace YoutubeDl
 
             if (chkAudioOnly.Checked)
             {
-                tmpFn = $"{txtSaveFolder.Text}\\{tmpFn}.partial.%(ext)s";
+                tmpFn = $"{txtSaveFolder.Text}\\{tmpFn}.partial.mp3";
 
                 youtubeDl.Options.FilesystemOptions.Output = tmpFn;
                 youtubeDl.Options.PostProcessingOptions.AudioFormat = NYoutubeDL.Helpers.Enums.AudioFormat.mp3;
                 youtubeDl.Options.PostProcessingOptions.KeepVideo = false;
                 youtubeDl.Options.PostProcessingOptions.ExtractAudio = true;
-                youtubeDl.Options.PostProcessingOptions.KeepVideo = true;
             }
             else
             {
@@ -98,6 +97,8 @@ namespace YoutubeDl
                 //var val = youtubeDl.Info.VideoProgress;
             };
 
+            //var vidTitle = youtubeDl.Info.Title;
+
             // Just let it run
             await youtubeDl.DownloadAsync();
 
@@ -107,7 +108,7 @@ namespace YoutubeDl
             btnChange.Enabled = true;
             menuStrip1.Enabled = true;
 
-            if(!chkAudioOnly.Checked)
+            if (!chkAudioOnly.Checked)
             {
                 if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
                 {
@@ -120,6 +121,21 @@ namespace YoutubeDl
                     var newFilename = tmpFn.Replace(".partial", "");
                     File.Move(tmpFn, newFilename);
                     txtTerminal.AppendText(Environment.NewLine + $"Saved as {newFilename}");
+                }
+            }
+            else
+            {
+                if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
+                {
+                    var newFilename = tmpFn.Replace(".partial", "").Replace(tmpDateTime, CleanFileName(youtubeDl.Info.Title));
+                    File.Move(tmpFn, newFilename);
+                    txtTerminal.AppendText(Environment.NewLine + $"Audio saved as {newFilename}");
+                }
+                else
+                {
+                    var newFilename = tmpFn.Replace(".partial", "");
+                    File.Move(tmpFn, newFilename);
+                    txtTerminal.AppendText(Environment.NewLine + $"Audio saved as {newFilename}");
                 }
             }
             
