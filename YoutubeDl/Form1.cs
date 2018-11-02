@@ -29,7 +29,7 @@ namespace YoutubeDl
 
             //Reload the last used folder if settings permit
             var lastDirectory = Properties.Settings.Default["LastDirectory"];
-            if(lastDirectory != null)
+            if(lastDirectory != null && !string.IsNullOrWhiteSpace((string)lastDirectory))
             {
                 txtSaveFolder.Text = (string)lastDirectory;
             }
@@ -64,7 +64,7 @@ namespace YoutubeDl
 
             if (chkAudioOnly.Checked)
             {
-                tmpFn = $"{txtSaveFolder.Text}\\{tmpFn}.partial.mp3";
+                tmpFn = $"{txtSaveFolder.Text}\\{tmpFn}.partial.%(ext)s";
 
                 youtubeDl.Options.FilesystemOptions.Output = tmpFn;
                 youtubeDl.Options.PostProcessingOptions.AudioFormat = NYoutubeDL.Helpers.Enums.AudioFormat.mp3;
@@ -138,23 +138,25 @@ namespace YoutubeDl
                     if(!string.IsNullOrWhiteSpace(ytId))
                     {
                         var imageBytes = await GetImageAsByteArray($"/vi/{ytId}/0.jpg", "https://img.youtube.com");
+                        var fnToFind = tmpFn.Replace(@".partial.%(ext)s", ".partial.mp3");
 
                         ////Add an image to the audio file.
                         TagLib.Id3v2.Tag.DefaultVersion = 3;
                         TagLib.Id3v2.Tag.ForceDefaultVersion = true;
-                        var fileToEdit = TagLib.File.Create(tmpFn);
-                        fileToEdit.Tag.Title = "";
+                        var fileToEdit = TagLib.File.Create(fnToFind);
+                        fileToEdit.Tag.Title = "Untitled";
                         if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
                         {
                             fileToEdit.Tag.Title = youtubeDl.Info.Title;
                         }
 
-                        fileToEdit.Tag.Performers = new string[] { "" };
-                        fileToEdit.Tag.AlbumArtists = new string[] { "" };
-                        fileToEdit.Tag.Album = "";
+                        fileToEdit.Tag.Performers = new[] { "YouTube Downloader" };
+                        fileToEdit.Tag.AlbumArtists = new[] { "YouTube Downloader" };
+                        fileToEdit.Tag.Album = "YouTube";
                         fileToEdit.Tag.Year = (uint)DateTime.Now.Year;
-                        fileToEdit.Tag.Genres = new string[] { "" };
-                        fileToEdit.Tag.Comment = "";
+                        fileToEdit.Tag.Genres = new[] { "Pop" };
+                        fileToEdit.Tag.Comment = " ";
+                        fileToEdit.Tag.Track = 1;
 
                         var pic = new TagLib.Picture
                         {
@@ -164,7 +166,7 @@ namespace YoutubeDl
                             Data = imageBytes
                         };
 
-                        fileToEdit.Tag.Pictures = new TagLib.IPicture[1] { pic };
+                        fileToEdit.Tag.Pictures = new TagLib.IPicture[] { pic };
                         var dt = fileToEdit.Tag.Pictures[0].Data.Data;
 
                         fileToEdit.Save();
@@ -175,14 +177,18 @@ namespace YoutubeDl
                 //Rename the audio file.
                 if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
                 {
-                    var newFilename = tmpFn.Replace(".partial", "").Replace(tmpDateTime, CleanFileName(youtubeDl.Info.Title));
-                    File.Move(tmpFn, newFilename);
+                    var fnToFind = tmpFn.Replace(@".partial.%(ext)s", ".partial.mp3");
+
+                    var newFilename = fnToFind.Replace(".partial", "").Replace(tmpDateTime, CleanFileName(youtubeDl.Info.Title));
+                    File.Move(fnToFind, newFilename);
                     txtTerminal.AppendText(Environment.NewLine + $"Audio saved as {newFilename}");
                 }
                 else
                 {
-                    var newFilename = tmpFn.Replace(".partial", "");
-                    File.Move(tmpFn, newFilename);
+                    var fnToFind = tmpFn.Replace(@".partial.%(ext)s", ".partial.mp3");
+
+                    var newFilename = fnToFind.Replace(".partial", "");
+                    File.Move(fnToFind, newFilename);
                     txtTerminal.AppendText(Environment.NewLine + $"Audio saved as {newFilename}");
                 }
             }
