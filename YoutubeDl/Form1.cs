@@ -144,6 +144,11 @@ namespace YoutubeDl
                         TagLib.Id3v2.Tag.ForceDefaultVersion = true;
                         var fileToEdit = TagLib.File.Create(tmpFn);
                         fileToEdit.Tag.Title = "";
+                        if (youtubeDl.Info != null && youtubeDl.Info.Title != null)
+                        {
+                            fileToEdit.Tag.Title = youtubeDl.Info.Title;
+                        }
+
                         fileToEdit.Tag.Performers = new string[] { "" };
                         fileToEdit.Tag.AlbumArtists = new string[] { "" };
                         fileToEdit.Tag.Album = "";
